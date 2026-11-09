@@ -63,6 +63,41 @@ Open your browser to:
 
 ---
 
+## 🐳 Docker Compose Deployment & USB Passthrough
+
+For persistent host deployment via `docker-compose.yml`:
+
+```yaml
+services:
+  dcled-studio:
+    image: diepeterpan/dreamcheekyledmatrix:latest # or build from repo
+    container_name: dcled-studio
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - /opt/dreamcheeky/config.json:/app/config.json
+      # Pass through USB device tree so container can claim Dream Cheeky hardware
+      - /dev/bus/usb:/dev/bus/usb
+    privileged: true
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DCLED_CONFIG=/app/config.json
+```
+
+> [!IMPORTANT]
+> **Host File Mount Notice**:
+> If mounting `/opt/dreamcheeky/config.json`, make sure the file exists on the host **before** running `docker compose up`. If the file does not exist, Docker will automatically create `/opt/dreamcheeky/config.json` as a directory on the host, causing an `[Errno 21] Is a directory` error.
+>
+> Prepare the host path first:
+> ```bash
+> sudo mkdir -p /opt/dreamcheeky
+> echo "{}" | sudo tee /opt/dreamcheeky/config.json
+> ```
+> *(Note: The application includes internal fallback detection that gracefully stores the configuration within the mounted directory if Docker created one).*
+
+---
+
 ## 📁 Repository Structure
 
 ```

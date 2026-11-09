@@ -39,31 +39,43 @@ class ConfigManager:
         self.data: Dict[str, Any] = dict(DEFAULT_CONFIG)
         self.load()
 
+    def _resolve_target_file(self) -> str:
+        """
+        Resolves the configuration file path.
+        If Docker created self.path as a directory (because the host file did not exist prior to bind mount),
+        stores config.json inside that directory instead of crashing.
+        """
+        if os.path.isdir(self.path):
+            return os.path.join(self.path, "config.json")
+        return self.path
+
     def load(self):
-        if os.path.exists(self.path):
+        filepath = self._resolve_target_file()
+        if os.path.exists(filepath):
             try:
-                with open(self.path, "r", encoding="utf-8") as f:
+                with open(filepath, "r", encoding="utf-8") as f:
                     content = f.read().strip()
                     if content:
                         saved = json.loads(content)
                         self.data.update(saved)
-                        logger.info(f"Loaded configuration from {self.path}")
+                        logger.info(f"Loaded configuration from {filepath}")
                     else:
-                        logger.warning(f"Configuration file {self.path} is empty. Populating with defaults.")
+                        logger.warning(f"Configuration file {filepath} is empty. Populating with defaults.")
                         self.save()
             except Exception as e:
-                logger.error(f"Failed to load configuration from {self.path}: {e}. Falling back to default config.")
+                logger.error(f"Failed to load configuration from {filepath}: {e}. Falling back to default config.")
                 self.save()
         else:
             self.save()
 
     def save(self):
+        filepath = self._resolve_target_file()
         try:
-            with open(self.path, "w", encoding="utf-8") as f:
+            with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(self.data, f, indent=2)
-            logger.info(f"Saved configuration to {self.path}")
+            logger.info(f"Saved configuration to {filepath}")
         except Exception as e:
-            logger.error(f"Failed to save configuration to {self.path}: {e}")
+            logger.error(f"Failed to save configuration to {filepath}: {e}")
 
     def get(self, key: str, default: Any = None) -> Any:
         return self.data.get(key, default)
