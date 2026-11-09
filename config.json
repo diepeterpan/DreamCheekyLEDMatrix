@@ -1,19 +1,20 @@
 {
   "service_running": true,
-  "script_code": "# DCLED Runtime Script\n# Available: requests, re, time, datetime, math, json, read_file, get_json\n\ndef get_text():\n    return \"HELLO WORLD!\"\n\nget_text()\n",
-  "interval_seconds": 15,
+  "script_code": "def get_text():\n    return \"PROMOTED NOW!\"\nget_text()\n",
+  "interval_seconds": 20,
   "effect": "scroll_west",
-  "speed_ms": 50,
-  "brightness": 1,
-  "font": "small",
+  "speed_ms": 45,
+  "brightness": 2,
+  "font": "default",
   "spacing": "proportional",
   "tach_percentage": 65,
   "dev_settings": {
     "effect": "scroll_west",
-    "interval_seconds": 30,
-    "speed_ms": 40,
+    "interval_seconds": 20,
+    "speed_ms": 45,
     "brightness": 2,
     "font": "default",
-    "spacing": "proportional"
+    "spacing": "proportional",
+    "script_code": "def get_text():\n    return \"PROMOTED NOW!\"\nget_text()\n"
   }
 }
