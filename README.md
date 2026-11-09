@@ -8,6 +8,24 @@ A modern 1980s retro-styled web controller, animation engine, and sandbox enviro
 
 ---
 
+## 📸 Screenshots
+
+### Live Monitor Tab
+Dedicated live hardware monitoring, 21×7 matrix rendering, real-time marquee feed, physical hardware settings, and service event logs.
+
+<p align="center">
+  <img src="docs/screenshots/ui_live_tab.png" alt="Dream Cheeky Studio - Live Monitor Tab" width="100%"/>
+</p>
+
+### Development Sandbox Tab
+Integrated Python script IDE, syntax checking, 4-space auto-formatter, sandbox test preview, interactive effect player (`ENABLE EFFECT`), and local disk file save/load.
+
+<p align="center">
+  <img src="docs/screenshots/ui_development_tab.png" alt="Dream Cheeky Studio - Development Tab" width="100%"/>
+</p>
+
+---
+
 ## 📟 Hardware Specifications
 
 - **Device Name**: Dream Cheeky USB LED Message Board (Model 818)

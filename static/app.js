@@ -58,6 +58,12 @@ function switchTab(tabId) {
 }
 
 function initSavedTab() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const tabParam = urlParams.get("tab");
+  if (tabParam === "dev" || tabParam === "live") {
+    switchTab(tabParam);
+    return;
+  }
   const savedTab = localStorage.getItem("dcled_active_tab");
   if (savedTab === "dev" || savedTab === "live") {
     switchTab(savedTab);
