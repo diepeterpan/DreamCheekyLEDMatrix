@@ -681,18 +681,7 @@ function resetDefaultScript() {
 # Available: requests, re, time, datetime, math, json, read_file, get_json
 
 def get_text():
-    now = datetime.datetime.now().strftime("%H:%M")
-    try:
-        url = "https://www.xe.com/api/protected/live-currency-rates/?currencyPairs=USD%2FZAR"
-        headers = {
-            "Authorization": "Basic bG9kZXN0YXI6cHVnc25heA==",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-        }
-        res = requests.get(url, headers=headers, timeout=5)
-        rate = res.json()[0]["rate"]
-        return f"{rate:.2f}"
-    except Exception as e:
-        return f"{now}"
+    return "HELLO WORLD!"
 
 get_text()
 `;

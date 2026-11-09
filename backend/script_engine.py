@@ -35,22 +35,7 @@ DEFAULT_SCRIPT = '''# DCLED Runtime Script
 # Builtins provided: requests, re, time, datetime, math, json, read_file, get_json
 
 def get_text():
-    # Example: Show current time and exchange rate or custom status
-    current_time = datetime.datetime.now().strftime("%H:%M")
-    
-    try:
-        # Example: Fetch USD to ZAR rate
-        url = "https://www.xe.com/api/protected/live-currency-rates/?currencyPairs=USD%2FZAR"
-        headers = {
-            "Authorization": "Basic bG9kZXN0YXI6cHVnc25heA==",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-        }
-        res = requests.get(url, headers=headers, timeout=5)
-        rate = res.json()[0]["rate"]
-        return f"{rate:.2f}"
-    except Exception as e:
-        print(f"Error fetching rate: {e}")
-        return f"{current_time}"
+    return "HELLO WORLD!"
 
 # Return the string by calling the function
 get_text()
