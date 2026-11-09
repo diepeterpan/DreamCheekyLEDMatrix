@@ -135,8 +135,12 @@ async function fetchInitialState() {
     const data = await res.json();
     currentState = data;
     applyStateToUI(data);
-    if (codeMirrorEditor && data.script_code) {
-      codeMirrorEditor.setValue(data.script_code);
+    if (codeMirrorEditor) {
+      // Prioritize dev_settings.script_code if user previously worked on a script in Development
+      const devCode = (data.dev_settings && data.dev_settings.script_code) ? data.dev_settings.script_code : data.script_code;
+      if (devCode) {
+        codeMirrorEditor.setValue(devCode);
+      }
     }
   } catch (err) {
     appendLiveLog(`Failed to connect to backend: ${err.message}`, "error");

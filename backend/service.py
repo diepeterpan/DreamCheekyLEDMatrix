@@ -148,7 +148,7 @@ class DCLEDService:
         }
 
     def promote_test_to_live(self, code: str, interval: int, effect: str, speed_ms: int, brightness: int, font: str = "default", spacing: str = "proportional"):
-        """Promotes tested script & settings to live active configuration."""
+        """Promotes tested script & settings to live active configuration and immediately pushes to USB device."""
         with self.lock:
             self.interval_seconds = interval
             self.effect_name = effect
@@ -157,7 +157,9 @@ class DCLEDService:
             self.font_name = font
             self.spacing_mode = spacing
             self.driver.set_brightness(brightness)
-            self.config_mgr.update({
+            # Update live configuration AND dev_settings
+            dev = dict(self.config_mgr.get("dev_settings", {}))
+            dev.update({
                 "script_code": code,
                 "interval_seconds": interval,
                 "effect": effect,
@@ -166,10 +168,24 @@ class DCLEDService:
                 "font": font,
                 "spacing": spacing
             })
+            self.config_mgr.update({
+                "script_code": code,
+                "interval_seconds": interval,
+                "effect": effect,
+                "speed_ms": speed_ms,
+                "brightness": brightness,
+                "font": font,
+                "spacing": spacing,
+                "dev_settings": dev
+            })
         self._add_log("Promoted new script and settings to LIVE!")
 
         # Re-evaluate live immediately
         self.execute_script_now()
+
+        # Immediately push an initial frame of the evaluated text to the USB hardware without waiting
+        initial_frame = render_static_text(self.current_live_text, align="center", font_name=font, spacing_mode=spacing)
+        self._push_frame(initial_frame)
 
     def _render_loop(self):
         """Main rendering pipeline updating 21x7 frames according to effect & speed."""

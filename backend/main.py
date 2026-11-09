@@ -96,6 +96,7 @@ class DevSettingsUpdateRequest(BaseModel):
     brightness: int = 2
     font: str = "default"
     spacing: str = "proportional"
+    script_code: Optional[str] = None
 
 @app.get("/", response_class=HTMLResponse)
 async def serve_index():
@@ -132,6 +133,12 @@ async def clear_logs():
 @app.post("/api/script/test")
 async def test_script(req: TestScriptRequest):
     result = service.test_script(req.code, font_name=req.font, spacing_mode=req.spacing)
+    # Persist the dev script in config under dev_settings
+    current_dev = dict(config_mgr.get("dev_settings", {}))
+    current_dev["script_code"] = req.code
+    current_dev["font"] = req.font
+    current_dev["spacing"] = req.spacing
+    config_mgr.update({"dev_settings": current_dev})
     return result
 
 @app.post("/api/script/preview_frames")
