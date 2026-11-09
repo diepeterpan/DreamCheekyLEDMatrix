@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 64" width="460" height="64">
+  <defs>
+    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF8C33" />
+      <stop offset="50%" stop-color="#FF6B00" />
+      <stop offset="100%" stop-color="#CC4E00" />
+    </linearGradient>
+    <radialGradient id="matrixDot" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FF3333" />
+      <stop offset="80%" stop-color="#DD0000" />
+      <stop offset="100%" stop-color="#880000" />
+    </radialGradient>
+    <filter id="retroGlow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#FF6B00" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Hardware Badge Icon -->
+  <g transform="translate(6, 8)">
+    <rect x="0" y="0" width="48" height="48" rx="5" fill="#181A20" stroke="#FF6B00" stroke-width="2.5" />
+    <rect x="3" y="3" width="42" height="42" rx="3" fill="#0C0D10" />
+    
+    <!-- 3x3 Micro Red Matrix Grid -->
+    <circle cx="12" cy="12" r="3" fill="url(#matrixDot)" />
+    <circle cx="24" cy="12" r="3" fill="url(#matrixDot)" />
+    <circle cx="36" cy="12" r="3" fill="url(#matrixDot)" />
+
+    <circle cx="12" cy="24" r="3" fill="url(#matrixDot)" />
+    <circle cx="24" cy="24" r="3" fill="#3A1114" />
+    <circle cx="36" cy="24" r="3" fill="url(#matrixDot)" />
+
+    <circle cx="12" cy="36" r="3" fill="url(#matrixDot)" />
+    <circle cx="24" cy="36" r="3" fill="url(#matrixDot)" />
+    <circle cx="36" cy="36" r="3" fill="url(#matrixDot)" />
+  </g>
+
+  <!-- Typography: Dream Cheeky - USB Message Board -->
+  <text x="66" y="32" font-family="'Courier New', Courier, monospace" font-size="21" font-weight="900" fill="url(#orangeGrad)" filter="url(#retroGlow)" letter-spacing="1.5">Dream Cheeky</text>
+  <text x="68" y="48" font-family="'Courier New', Courier, monospace" font-size="12" font-weight="700" fill="#FFFFFF" letter-spacing="2.5">- USB Message Board</text>
+  
+  <!-- CRT Scanline accents -->
+  <line x1="66" y1="54" x2="440" y2="54" stroke="#FF6B00" stroke-width="1.5" stroke-dasharray="4 2" opacity="0.7"/>
+</svg>
+

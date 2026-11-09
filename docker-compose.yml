@@ -1,0 +1,18 @@
+services:
+  dcled-studio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dcled-studio
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config.json:/app/config.json
+      # Pass through USB device tree so container can claim Dream Cheeky hardware
+      - /dev/bus/usb:/dev/bus/usb
+    privileged: true
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DCLED_CONFIG=/app/config.json
+

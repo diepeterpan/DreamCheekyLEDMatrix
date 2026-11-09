@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dream Cheeky - USB Message Board</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Retro 80s Cyberpunk / Computer Fonts: VT323 & Press Start 2P -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <!-- CodeMirror for Retro IDE Scripting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/nord.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+</head>
+<body class="crt-overlay">
+
+  <!-- TOP BAR WITH BRAND, TABS, AND TELEMETRY -->
+  <header class="top-nav">
+    <div class="brand">
+      <img src="/static/logo.svg" alt="DCLED Logo" class="brand-logo">
+    </div>
+
+    <!-- PRIMARY TABS NAVIGATION -->
+    <nav class="nav-tabs" role="tablist">
+      <button id="tab-btn-live" class="tab-button active" onclick="switchTab('live')" role="tab" aria-selected="true">
+        LIVE
+      </button>
+      <button id="tab-btn-dev" class="tab-button" onclick="switchTab('dev')" role="tab" aria-selected="false">
+        DEVELOPMENT
+      </button>
+    </nav>
+
+    <div class="system-telemetry">
+      <div id="usb-badge" class="telemetry-pill pill-disconnected">
+        <span id="usb-text">SEARCHING...</span>
+      </div>
+
+      <div id="service-badge" class="telemetry-pill pill-running">
+        <span id="service-text">STARTED</span>
+      </div>
+
+      <div class="clock-display" id="system-clock">--:--:--</div>
+    </div>
+  </header>
+
+  <!-- MAIN TABBED CONTAINER -->
+  <main class="dashboard-viewport">
+
+    <!-- ============================================================== -->
+    <!-- TAB 1: LIVE MONITOR -->
+    <!-- ============================================================== -->
+    <div id="tab-content-live" class="tab-pane active" role="tabpanel">
+      <div class="tab-layout-grid">
+
+        <!-- LEFT COLUMN: LIVE MATRIX & CONSOLE -->
+        <div class="pane-column primary-column">
+          <!-- LIVE MATRIX DISPLAY -->
+          <section class="panel matrix-panel">
+            <div class="panel-header">
+              <span class="panel-title"><span class="badge-live">● LIVE</span> HARDWARE (21x7)</span>
+              <span class="matrix-subinfo" id="live-effect-label">EFFECT: SCROLL WEST</span>
+            </div>
+
+            <div class="matrix-bezel">
+              <div class="grid-21x7" id="live-matrix-grid">
+                <!-- Dynamically rendered 147 LEDs -->
+              </div>
+            </div>
+
+            <div class="matrix-footer">
+              <div class="text-marquee">
+                <span class="label">LIVE BUFFER:</span>
+                <span class="value" id="live-text-preview">INITIALIZING...</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- LIVE CONSOLE & USB TELEMETRY -->
+          <section class="panel log-panel">
+            <div class="panel-header">
+              <span class="panel-title">[#] SERVICE LOGS</span>
+              <button class="btn-retro btn-mini" onclick="clearLiveLogs()">CLEAR</button>
+            </div>
+            <div class="terminal-box" id="terminal-live">
+              <div class="log-entry system">[SYSTEM] Connecting to WebSocket telemetry stream...</div>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT COLUMN: LIVE CONTROLS & HARDWARE SETTINGS -->
+        <div class="pane-column secondary-column">
+          <section class="panel controls-panel">
+            <div class="panel-header">
+              <span class="panel-title">🎛 SETTINGS</span>
+            </div>
+
+            <div class="button-toolbar">
+              <button id="btn-start" class="btn-retro btn-primary" onclick="setServiceState(true)">
+                <span class="btn-icon">▶</span> START SERVICE
+              </button>
+              <button id="btn-stop" class="btn-retro btn-secondary" onclick="setServiceState(false)">
+                <span class="btn-icon">⏹</span> STOP SERVICE
+              </button>
+              <button id="btn-reconnect" class="btn-retro btn-neutral" onclick="reconnectUSB()">
+                <span class="btn-icon">🔄</span> SCAN USB
+              </button>
+            </div>
+
+            <div class="settings-grid">
+              <div class="setting-item">
+                <label for="select-effect">EFFECT:</label>
+                <select id="select-effect" onchange="updateSettings()">
+                  <optgroup label="Scrolling">
+                    <option value="scroll_west">Scroll Left (West)</option>
+                    <option value="scroll_east">Scroll Right (East)</option>
+                    <option value="scroll_north">Scroll Up (North)</option>
+                    <option value="scroll_south">Scroll Down (South)</option>
+                  </optgroup>
+                  <optgroup label="Static & Clock">
+                    <option value="static">Static Text</option>
+                    <option value="flash">Flashing Text</option>
+                    <option value="clock24">24-Hour Clock</option>
+                    <option value="clock12">12-Hour Clock</option>
+                    <option value="bcdclock">Binary BCD Clock</option>
+                  </optgroup>
+                  <optgroup label="Visual Preambles">
+                    <option value="fire">Fire Hearth</option>
+                    <option value="tv_warmup">TV Static Warmup</option>
+                    <option value="squiggle">Squiggle Line</option>
+                    <option value="tach">Tachometer Bar</option>
+                  </optgroup>
+                </select>
+              </div>
+
+              <div class="setting-item">
+                <label for="input-interval">INTERVAL (SEC):</label>
+                <input type="number" id="input-interval" min="1" max="3600" value="30" onchange="updateSettings()">
+              </div>
+
+              <div class="setting-item">
+                <label for="input-speed">SPEED (MS):</label>
+                <div class="slider-wrapper">
+                  <input type="range" id="input-speed" min="10" max="200" step="5" value="40" oninput="document.getElementById('speed-val').innerText = this.value + 'ms'" onchange="updateSettings()">
+                  <span id="speed-val" class="slider-val">40ms</span>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <label for="select-brightness">BRIGHTNESS:</label>
+                <select id="select-brightness" onchange="updateSettings()">
+                  <option value="0">0 - Low</option>
+                  <option value="1">1 - Medium</option>
+                  <option value="2" selected>2 - High</option>
+                </select>
+              </div>
+
+              <div class="setting-item">
+                <label for="select-font">FONT:</label>
+                <select id="select-font" onchange="updateSettings()">
+                  <option value="default">Default (5x7 Standard X11)</option>
+                  <option value="small">Small (4x7 Compact)</option>
+                  <option value="sga">SGA (Standard Galactic)</option>
+                  <option value="small_inv">Small Inverted (4x7)</option>
+                </select>
+              </div>
+
+              <div class="setting-item">
+                <label for="select-spacing">SPACING:</label>
+                <select id="select-spacing" onchange="updateSettings()">
+                  <option value="proportional" selected>Proportional (High Density)</option>
+                  <option value="fixed">Fixed Width (Monospace)</option>
+                </select>
+              </div>
+            </div>
+          </section>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- TAB 2: DEVELOPMENT SANDBOX -->
+    <!-- ============================================================== -->
+    <div id="tab-content-dev" class="tab-pane" role="tabpanel">
+      <div class="tab-layout-grid dev-grid">
+
+        <!-- LEFT COLUMN: SCRIPT EDITOR & DEV TOOLBAR -->
+        <div class="pane-column primary-column">
+          <section class="panel script-panel">
+            <div class="panel-header">
+              <span class="panel-title">&gt;_ PYTHON SCRIPT</span>
+              <span class="subtext">requests, math, datetime, json, read_file(), get_json()</span>
+            </div>
+
+            <div class="editor-container">
+              <textarea id="script-editor"></textarea>
+            </div>
+
+            <div class="editor-toolbar">
+              <div class="action-row primary-actions">
+                <button class="btn-retro btn-accent" onclick="runScriptTest()">
+                  <span class="btn-icon">⚡</span> TEST
+                </button>
+                <button class="btn-retro btn-promote" onclick="promoteToLive()">
+                  <span class="btn-icon">▲</span> PROMOTE TO LIVE
+                </button>
+                <button class="btn-retro btn-neutral" onclick="resetDefaultScript()">
+                  <span class="btn-icon">↺</span> RESET
+                </button>
+                <button class="btn-retro btn-tool" title="Save script to local disk (.py file)" onclick="saveScriptToDisk()">
+                  <span class="btn-icon">💾</span> SAVE
+                </button>
+                <button class="btn-retro btn-tool" title="Load script from local disk (.py file)" onclick="triggerLoadFromDisk()">
+                  <span class="btn-icon">📂</span> LOAD
+                </button>
+              </div>
+
+              <div class="action-row dev-actions">
+                <button class="btn-retro btn-tool" title="Format Python Code (PEP8 Standard 4-Spaces)" onclick="formatCode('spaces')">
+                  <span class="btn-icon">✨</span> FORMAT (4 SPACES)
+                </button>
+                <button class="btn-retro btn-tool" title="Convert Tabs to 4 Spaces" onclick="convertTabsToSpaces()">
+                  <span class="btn-icon">⇥</span> TABS TO SPACES
+                </button>
+                <button class="btn-retro btn-tool" title="Check Python Syntax and Indentation" onclick="validateSyntax()">
+                  <span class="btn-icon">🔍</span> CHECK SYNTAX
+                </button>
+                <input type="file" id="file-input-disk" accept=".py,.txt" style="display:none;" onchange="handleFileLoaded(event)">
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT COLUMN: TEST MATRIX, DEV TUNING, DEV CONSOLE -->
+        <div class="pane-column secondary-column">
+          <!-- TEST MATRIX PREVIEW -->
+          <section class="panel matrix-panel">
+            <div class="panel-header">
+              <span class="panel-title"><span class="badge-test">▲ TEST</span> SCRIPT PREVIEW</span>
+              <div class="header-right-actions">
+                <button id="btn-enable-effect" class="btn-retro btn-mini btn-accent" onclick="toggleTestAnimation()">
+                  <span id="anim-icon">▶</span> ENABLE EFFECT
+                </button>
+                <span class="matrix-subinfo" id="test-duration-label">EXEC: --ms</span>
+              </div>
+            </div>
+
+            <div class="matrix-bezel">
+              <div class="grid-21x7" id="test-matrix-grid">
+                <!-- Dynamically rendered 147 LEDs -->
+              </div>
+            </div>
+
+            <div class="matrix-footer">
+              <div class="text-marquee">
+                <span class="label">TEST OUTPUT:</span>
+                <span class="value" id="test-text-preview">Ready to test script</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- TEST TUNING SETTINGS (SANDBOX PARAMETERS) -->
+          <section class="panel controls-panel">
+            <div class="panel-header">
+              <span class="panel-title">🧪 SETTINGS</span>
+            </div>
+
+            <div class="settings-grid">
+              <div class="setting-item">
+                <label for="dev-select-effect">EFFECT:</label>
+                <select id="dev-select-effect" onchange="updateDevSettings()">
+                  <optgroup label="Scrolling">
+                    <option value="scroll_west">Scroll Left (West)</option>
+                    <option value="scroll_east">Scroll Right (East)</option>
+                    <option value="scroll_north">Scroll Up (North)</option>
+                    <option value="scroll_south">Scroll Down (South)</option>
+                  </optgroup>
+                  <optgroup label="Static & Clock">
+                    <option value="static">Static Text</option>
+                    <option value="flash">Flashing Text</option>
+                    <option value="clock24">24-Hour Clock</option>
+                    <option value="clock12">12-Hour Clock</option>
+                    <option value="bcdclock">Binary BCD Clock</option>
+                  </optgroup>
+                  <optgroup label="Visual Preambles">
+                    <option value="fire">Fire Hearth</option>
+                    <option value="tv_warmup">TV Static Warmup</option>
+                    <option value="squiggle">Squiggle Line</option>
+                    <option value="tach">Tachometer Bar</option>
+                  </optgroup>
+                </select>
+              </div>
+
+              <div class="setting-item">
+                <label for="dev-input-interval">INTERVAL (SEC):</label>
+                <input type="number" id="dev-input-interval" min="1" max="3600" value="30" onchange="updateDevSettings()">
+              </div>
+
+              <div class="setting-item">
+                <label for="dev-input-speed">SPEED (MS):</label>
+                <div class="slider-wrapper">
+                  <input type="range" id="dev-input-speed" min="10" max="200" step="5" value="40" oninput="document.getElementById('dev-speed-val').innerText = this.value + 'ms'" onchange="updateDevSettings()">
+                  <span id="dev-speed-val" class="slider-val">40ms</span>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <label for="dev-select-brightness">BRIGHTNESS:</label>
+                <select id="dev-select-brightness" onchange="updateDevSettings()">
+                  <option value="0">0 - Low</option>
+                  <option value="1">1 - Medium</option>
+                  <option value="2" selected>2 - High</option>
+                </select>
+              </div>
+
+              <div class="setting-item">
+                <label for="dev-select-font">FONT:</label>
+                <select id="dev-select-font" onchange="updateDevSettings()">
+                  <option value="default">Default (5x7 Standard X11)</option>
+                  <option value="small">Small (4x7 Compact)</option>
+                  <option value="sga">SGA (Standard Galactic)</option>
+                  <option value="small_inv">Small Inverted (4x7)</option>
+                </select>
+              </div>
+
+              <div class="setting-item">
+                <label for="dev-select-spacing">SPACING:</label>
+                <select id="dev-select-spacing" onchange="updateDevSettings()">
+                  <option value="proportional" selected>Proportional (High Density)</option>
+                  <option value="fixed">Fixed Width (Monospace)</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <!-- DEV CONSOLE & ERROR DIAGNOSTICS -->
+          <section class="panel log-panel">
+            <div class="panel-header">
+              <span class="panel-title">[#] CONSOLE / DIAGNOSTICS</span>
+              <button class="btn-retro btn-mini" onclick="clearDevLogs()">CLEAR</button>
+            </div>
+            <div class="terminal-box" id="terminal-dev">
+              <div class="log-entry system">[DEV] Development sandbox ready. Write Python code and click TEST SCRIPT.</div>
+            </div>
+          </section>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "service_running": true,
+  "script_code": "def get_text():\n    try:\n        url = \"https://www.xe.com/api/protected/live-currency-rates/?currencyPairs=USD%2FZAR\"\n        headers = {\n            \"Authorization\": \"Basic bG9kZXN0YXI6cHVnc25heA==\",\n            \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\"\n        }\n        res = requests.get(url, headers=headers, timeout=5)\n        data = res.json()\n        zar_rate = round(data[0][\"rate\"], 2)\n        return f\"{zar_rate:.2f}\"\n    except Exception as e: \n        print(f\"Failed to fetch rate: {type(e).__name__} - {e}\")\n        return \"ERR!\"\nget_text()",
+  "interval_seconds": 15,
+  "effect": "scroll_west",
+  "speed_ms": 50,
+  "brightness": 1,
+  "font": "small",
+  "spacing": "proportional",
+  "tach_percentage": 65,
+  "dev_settings": {
+    "effect": "flash",
+    "interval_seconds": 30,
+    "speed_ms": 85,
+    "brightness": 2,
+    "font": "default",
+    "spacing": "proportional"
+  }
+}

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="redGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FF3B30" />
+      <stop offset="70%" stop-color="#FF0000" />
+      <stop offset="100%" stop-color="#990000" />
+    </radialGradient>
+    <radialGradient id="dimGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#401010" />
+      <stop offset="100%" stop-color="#1A0505" />
+    </radialGradient>
+    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background Chassis -->
+  <rect x="2" y="2" width="60" height="60" rx="6" fill="#141519" stroke="#FF6B00" stroke-width="2.5" />
+  <rect x="6" y="6" width="52" height="52" rx="4" fill="#0C0D0F" stroke="#333" stroke-width="1" />
+
+  <!-- 5x5 LED pixel pattern forming 80s D C -->
+  <!-- Col 1: D backbone -->
+  <circle cx="16" cy="16" r="3.2" fill="url(#redGlow)" filter="url(#neonGlow)" />
+  <circle cx="16" cy="24" r="3.2" fill="url(#redGlow)" filter="url(#neonGlow)" />
+  <circle cx="16" cy="32" r="3.2" fill="url(#redGlow)" filter="url(#neonGlow)" />
+  <circle cx="16" cy="40" r="3.2" fill="url(#redGlow)" filter="url(#neonGlow)" />
+  <circle cx="16" cy="48" r="3.2" fill="url(#redGlow)" filter="url(#neonGlow)" />
+
+  <!-- Col 2: D arches -->
+  <circle cx="24" cy="16" r="3.2" fill="url(#redGlow)" filter="url(#neonGlow)" />
+  <circle cx="24" cy="24" r="3.2" fill="url(#dimGlow)" />
+  <circle cx="24" cy="32" r="3.2" fill="url(#dimGlow)" />
+  <circle cx="24" cy="40" r="3.2" fill="url(#dimGlow)" />
+  <circle cx="24" cy="48" r="3.2" fill="url(#redGlow)" filter="url(#neonGlow)" />
+
+  <!-- Col 3: D cap -->
+  <circle cx="32" cy="24" r="3.2" fill="url(#redGlow)" filter="url(#neonGlow)" />
+  <circle cx="32" cy="32" r="3.2" fill="url(#redGlow)" filter="url(#neonGlow)" />
+  <circle cx="32" cy="40" r="3.2" fill="url(#redGlow)" filter="url(#neonGlow)" />
+
+  <!-- C symbol -->
+  <circle cx="48" cy="16" r="3.2" fill="url(#redGlow)" filter="url(#neonGlow)" />
+  <circle cx="40" cy="16" r="3.2" fill="url(#redGlow)" filter="url(#neonGlow)" />
+  <circle cx="40" cy="24" r="3.2" fill="url(#redGlow)" filter="url(#neonGlow)" />
+  <circle cx="40" cy="32" r="3.2" fill="url(#redGlow)" filter="url(#neonGlow)" />
+  <circle cx="40" cy="40" r="3.2" fill="url(#redGlow)" filter="url(#neonGlow)" />
+  <circle cx="40" cy="48" r="3.2" fill="url(#redGlow)" filter="url(#neonGlow)" />
+  <circle cx="48" cy="48" r="3.2" fill="url(#redGlow)" filter="url(#neonGlow)" />
+</svg>
+
